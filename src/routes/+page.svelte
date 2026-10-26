@@ -2,7 +2,7 @@
 //@ts-nocheck
 	import { onMount } from "svelte";
 
-    let step = $state(1);
+    let step = $state(9);
     let mouseHovering = $state(false);
     let mouseHoveringSmall = $state(false);
     let username = $state('');
@@ -11,6 +11,9 @@
     onMount(() => {
         username = localStorage.getItem("username") || '';
     })
+
+
+    const longAhhArray = Array.from({length: 100}, (_, i) => i + 1)
 let nextPageDelayedRunning = $state(false);
     function nextPageDelayed () {
         if(!nextPageDelayedRunning) {
@@ -20,6 +23,12 @@ let nextPageDelayedRunning = $state(false);
             stepUp();
             nextPageDelayedRunning = false;
         }, 250);
+        }
+    }
+
+    function handleKeyDown (event) {
+        if(event.key == "Tab") {
+            event.preventDefault();
         }
     }
 
@@ -77,12 +86,14 @@ let nextPageDelayedRunning = $state(false);
 
 </script>
 
+<svelte:window onkeydown={handleKeyDown}></svelte:window>
 <div class="center">
 {#if !failed}
     <div class="box" class:screen={step > 2}> 
         {#if step < 2}
-            <h1 style="margin-top: 30px;">Welcome to Unsub</h1>
-            <h2>The evil newsletter</h2>
+            <h1 style="margin-top: 30px; padding: 0;">Welcome to Unsub</h1>
+            <h2 style="padding: 0;"> The evil newsletter</h2>
+            <div class="divider" style="margin-top: 10px;"></div>
             <p>Unsub is a browser-based game with the goal of unsubscribing from a mysterious company's newsletter. <br> Important note; the company in the game - ("Fraude") is entirely fictional and is not affiliated with any real companies. To start playing, please enter a username and click "unsubscribe"</p>
             <input style="margin-bottom: 10px;" class="inputFancy" bind:value={username} placeholder="Enter your username. E.g., John">
             <button style="margin: 20px; margin-top: 0;" class="unsubButton" onclick={() => {if(username) {stepUp(); localStorage.setItem("username", username)}}}>Unsubscribe</button>
@@ -138,17 +149,20 @@ let nextPageDelayedRunning = $state(false);
                     </button>
                     </div>
                 {:else if step == 6}
-                    <h2>Good, you clicked "no". If you change your mind, simply click the button below (might take a few tries)</h2>
+                <h1>Good answer!</h1>
+                    <h2>Good, you clicked "no". If you change your mind, simply click the button below (might take 20 tries or something...)</h2>
                     <button class="unsubButton" style="width: 40%; height: 20%; margin-top: 10px;" onclick={() => {displayRandom()}}>Unsubscribe</button>
                     <p>{message}</p>
+                    
                 {:else if step == 7}
                 {#if !markedAnswer}
-                    <h2 style="margin-top: 10px;">Really? Okay... <br> Just to make sure, please write an essay regarding why you want to unsubscribe. A good enough essay means you can continue.</h2>
+                <h1>What rhymes with shmessay?</h1>
+                    <h2 style="">Really? Okay... <br> Just to make sure, please write an essay regarding why you want to unsubscribe. A good enough essay means you can continue.</h2>
                     <textarea bind:value={userEssay} placeholder="I'd like to unsubscribe, because..." style="margin-bottom: 20px;" maxlength="500"></textarea>
                     <button class="fancyButton" onclick={() => gradePaper()}>Submit for marking</button>
                     {:else}
-                    <h2>Your grade:</h2>
-                    <p>{markedAnswer.grade}%; {markedAnswer.judgement}</p>
+                    <h2 style="padding: 0; margin: 0">Your grade:</h2>
+                    <p style="padding: 0; margin: 0">{markedAnswer.grade}%; {markedAnswer.judgement}</p>
                     {#if markedAnswer.grade >= 50}
                     <h2>You passed. Congratulations. <br> Now for the next verification step.</h2>
                     <button class="link" onclick={() => {stepUp(); markedAnswer = {}}}>Continue</button>
@@ -183,12 +197,26 @@ let nextPageDelayedRunning = $state(false);
                     {:else if step == 9}
 
                     <h2>That's some dedication... If that didn't deter you, we need to change strategies!</h2>
-                    <p style="padding: 0;">How can you say no to an overly anthropomophised envelope?</p>
+                    <p style="padding: 0;">How can you say no to an overly anthropomophised envelope? (His name is Malcolm)</p>
                     
                     <img class="malcolm" src="/malcolm.png" alt="An overly anthropomophised envelope mascot">
                     <div class="speechBubble">Please don't unsubscribe!</div>
                     <button style="width: 30%; height: 5%; margin: 10px; font-size: 15px; margin-top: 20px;" class="link" onclick={() => {stepUp()}}>Unsubscribe</button>
                     <button style="width: 30%; height: 5%; margin: 0; font-size: 15px;" class="link" onclick={() => {fail()}}>Cancel</button>
+
+                    {:else if step == 10}
+                    <h1 style="margin-top: 20px;">Let's test your dedication...</h1>
+                    <h2>Don't worry, it's somewhere <button class="secretButton" onclick={() => {stepUp()}}>here</button></h2>
+                    <div class="scrollableS">
+                 {#each longAhhArray}
+                    <button class="longListButton">Is this the right button?</button>
+                 {/each}
+                    </div>
+
+                    {:else if step == 11}
+                    <h1>Congrats! You won.</h1>
+                    <h2>Wait... A new message from Fraude: <br> "Sorry to see you go. You'll be back. We know you will."</h2>
+                    <p style="max-width: 80%;">Hey, thanks for playing my game! That's all for now! I'd love to hear your suggestions for other levels and plotlines, so please leave them in the ratings if you're reviewing the project. :D <br> Capy out!</p>
                 {/if}
             </div>
             
@@ -210,6 +238,35 @@ let nextPageDelayedRunning = $state(false);
 
 
 <style>
+.secretButton {
+    background: none;
+    color: white;
+    border: none;
+    outline: none;
+    font-size: 18px;
+    font-weight: 300;
+    color: #B2B2B2;
+    padding: 0;
+    margin: 0;
+}
+.secretButton:hover {
+    font-size: 25px;
+}
+.longListButton {
+    border-radius: 10px;
+    outline: none;
+    padding: 5px;
+    border: none;
+    width: 10%;
+    margin: 5px;
+   
+}
+button {
+    transition: 0.1s;
+}
+button:hover {
+transform: scale(1.025);
+}
 .speechBubble {
     width: 30%;
     height: 10%;
@@ -221,6 +278,8 @@ let nextPageDelayedRunning = $state(false);
     color: white;
     border-radius: 100px;
     font-size: 20px;
+    min-height: 70px;
+    min-width: 300px
 }
 .malcolm {
     width: 30%;
@@ -247,10 +306,17 @@ let nextPageDelayedRunning = $state(false);
 .scrollable {
     overflow: auto;
     padding: 10px;
-    gap: 0;
+    gap: 0px;
     animation: slide 3s infinite ease-in-out;
 }
 
+.scrollableS {
+    overflow: auto;
+    padding: 10px;
+    gap: 0px;
+    display: flex;
+    flex-wrap: wrap;
+}
 
 @keyframes slide {
 0% {
@@ -285,6 +351,7 @@ let nextPageDelayedRunning = $state(false);
 .link {
     width: 50%;
     height: 10%;
+    min-width: 300px;
     font-size: 20px;
 }
 .inputFancy {
@@ -294,7 +361,7 @@ let nextPageDelayedRunning = $state(false);
     padding: 10px;
     background: none;
     outline: none;
-    border: 2px rgba(0, 0, 0, 0.5) solid;
+    border: 2px rgba(0, 0, 0, 0.3) solid;
     border-radius: 10px;
     color: white;
 }
@@ -363,10 +430,10 @@ h2 {
         outline: none;
         border: none;
         color: #B2B2B2;
-        font-size: 30px;
+        font-size: 20px;
         width: 90%;
         height: 10%;
-        border-radius: 5px;
+        border-radius: 10px;
     }
     * {
         font-family: 'Jost', sans-serif;
@@ -410,8 +477,10 @@ h2 {
         flex-direction: column;
         border-radius: 20px;
         transition: 0.2s ease-in-out;
-         width: clamp(20rem, 40vw, 60rem);
-        height: clamp(30rem, 40vh, 60rem);
+        width: 30%;
+        min-width: 450px;
+        height: 55%;
+        min-height: 450px;
     }
     .box.screen {
         width: 70%;
@@ -431,6 +500,7 @@ h2 {
         display: flex;
         align-items: center;
         flex-direction: column;
+        justify-content: center;
     }
     .stand {
         margin: 0;
