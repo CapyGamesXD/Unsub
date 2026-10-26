@@ -2,7 +2,7 @@
 //@ts-nocheck
 	import { onMount } from "svelte";
 
-    let step = $state(0);
+    let step = $state(1);
     let mouseHovering = $state(false);
     let mouseHoveringSmall = $state(false);
     let username = $state('');
@@ -55,6 +55,7 @@ let nextPageDelayedRunning = $state(false);
     let markedAnswer = $state('');
 
     async function gradePaper () {
+        try {
         const response = await fetch('/api', {
 			method: 'POST',
 			body: JSON.stringify({ userEssay }),
@@ -65,8 +66,11 @@ let nextPageDelayedRunning = $state(false);
 
         const formatted = await response.json();
         markedAnswer = JSON.parse(formatted.response)
-
+        
     console.log(markedAnswer)
+        } catch (err) {
+            markedAnswer = {grade: 60, judgement: "server error. You got lucky. This time."}
+        }
     }
     function fail () {
         failed = true;
@@ -354,6 +358,9 @@ transform: scale(1.025);
     min-width: 300px;
     font-size: 20px;
     border-radius: 10px;
+    outline: none;
+    border: none;
+    box-shadow: none;
 }
 .inputFancy {
     width: 80%;
