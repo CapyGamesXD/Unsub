@@ -353,6 +353,7 @@ transform: scale(1.025);
     height: 10%;
     min-width: 300px;
     font-size: 20px;
+    border-radius: 10px;
 }
 .inputFancy {
     width: 80%;
