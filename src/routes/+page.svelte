@@ -2,7 +2,7 @@
 //@ts-nocheck
 	import { onMount } from "svelte";
 
-    let step = $state(8);
+    let step = $state(1);
     let mouseHovering = $state(false);
     let mouseHoveringSmall = $state(false);
     let username = $state('');
