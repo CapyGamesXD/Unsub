@@ -2,7 +2,7 @@
 //@ts-nocheck
 	import { onMount } from "svelte";
 
-    let step = $state(1);
+    let step = $state(8);
     let mouseHovering = $state(false);
     let mouseHoveringSmall = $state(false);
     let username = $state('');
@@ -27,8 +27,9 @@ let nextPageDelayedRunning = $state(false);
     }
 
     function handleKeyDown (event) {
-        if(event.key == "Tab") {
-            event.preventDefault();
+        if(event.key == "Tab" && step == 8) {       
+                event.preventDefault();
+                alert("Tab is disabled :) Good luck!");    
         }
     }
 
@@ -53,8 +54,9 @@ let nextPageDelayedRunning = $state(false);
     }
 
     let markedAnswer = $state('');
-
+    let markingStatus = $state(false)
     async function gradePaper () {
+        markingStatus = true;
         try {
         const response = await fetch('/api', {
 			method: 'POST',
@@ -68,8 +70,10 @@ let nextPageDelayedRunning = $state(false);
         markedAnswer = JSON.parse(formatted.response)
         
     console.log(markedAnswer)
+    markingStatus = false
         } catch (err) {
             markedAnswer = {grade: 60, judgement: "server error. You got lucky. This time."}
+            markingStatus = false
         }
     }
     function fail () {
@@ -160,10 +164,15 @@ let nextPageDelayedRunning = $state(false);
                     
                 {:else if step == 7}
                 {#if !markedAnswer}
+                {#if markingStatus == false}
                 <h1>What rhymes with shmessay?</h1>
                     <h2 style="">Really? Okay... <br> Just to make sure, please write an essay regarding why you want to unsubscribe. A good enough essay means you can continue.</h2>
                     <textarea bind:value={userEssay} placeholder="I'd like to unsubscribe, because..." style="margin-bottom: 20px;" maxlength="500"></textarea>
                     <button class="fancyButton" onclick={() => gradePaper()}>Submit for marking</button>
+
+                    {:else}
+                    <h1>Grading...</h1>
+                {/if}
                     {:else}
                     <h2 style="padding: 0; margin: 0">Your grade:</h2>
                     <p style="padding: 0; margin: 0">{markedAnswer.grade}%; {markedAnswer.judgement}</p>
@@ -372,6 +381,7 @@ transform: scale(1.025);
     border: 2px rgba(0, 0, 0, 0.3) solid;
     border-radius: 10px;
     color: white;
+    text-align: center;
 }
 .fancyButton {
     width: 10vw;
